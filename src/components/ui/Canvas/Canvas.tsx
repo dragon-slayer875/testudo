@@ -233,13 +233,6 @@ export default function Canvas(): JSX.Element {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
         window.addEventListener("resize", () => draw());
         canvas.addEventListener("touchstart", (event) =>
             onTouchStart(event.touches)
