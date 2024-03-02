@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect, useCallback } from "react";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
@@ -31,7 +31,22 @@ export default function Canvas(): JSX.Element {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
+    const handleResize = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = contextRef.current;
+        if (!ctx) return;
+        const roughCanvas = rough.canvas(canvas);
+        elements.forEach(({ roughElement }) => {
+            roughCanvas.draw(roughElement);
+        });
+    }
+    , [elements]);
+
     useLayoutEffect(() => {
+        window.addEventListener("resize", handleResize);
         const canvas = canvasRef.current;
         if (!canvas) return;
         canvas.width = window.innerWidth;
@@ -43,7 +58,7 @@ export default function Canvas(): JSX.Element {
         elements.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
-    }, [elements]);
+    }, [elements, handleResize]);
 
     function handleMouseDown(
         event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
