@@ -1,5 +1,4 @@
 "use client";
-import { on } from "events";
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
@@ -112,7 +111,7 @@ export default function Canvas(): JSX.Element {
 
     useEffect(() => {
         const panOrZoomHandler = (event: WheelEvent) => {
-            if (pressedKeys.has(" ")) onZoom(event.deltaY * (0.001));
+            if (pressedKeys.has(" ")) onZoom(event.deltaY * 0.001);
             else {
                 setPanOffset((prevState) => ({
                     x: prevState.x - event.deltaX,
@@ -129,9 +128,9 @@ export default function Canvas(): JSX.Element {
         event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
     ) {
         const clientX =
-            (event.clientX - panOffset.x * scale + scaleOffset.x)/scale;
+            (event.clientX - panOffset.x * scale + scaleOffset.x) / scale;
         const clientY =
-            (event.clientY - panOffset.y * scale + scaleOffset.y)/scale;
+            (event.clientY - panOffset.y * scale + scaleOffset.y) / scale;
         return { clientX, clientY };
     }
 
@@ -164,7 +163,7 @@ export default function Canvas(): JSX.Element {
             }));
             return;
         }
-        if (action == "draw") {
+        if (action === "draw") {
             const index = elements.length - 1;
             const { x1, y1 } = elements[index];
             const updatedElement = createElement(x1, y1, clientX, clientY);
@@ -172,7 +171,15 @@ export default function Canvas(): JSX.Element {
             elementsCopy[index] = updatedElement;
             setElements(elementsCopy);
         }
-
+        console.log(
+            clientX,
+            clientY,
+            action,
+            scaleOffset.x,
+            scaleOffset.y,
+            scale,
+            scaleOffset
+        );
     }
 
     function handleMouseUp() {
@@ -180,7 +187,7 @@ export default function Canvas(): JSX.Element {
     }
 
     function onZoom(delta: number) {
-        setScale(prevState => Math.min(Math.max(prevState + delta, 0.1), 20));
+        setScale((prevState) => Math.min(Math.max(prevState + delta, 0.1), 20));
     }
 
     return (
