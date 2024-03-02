@@ -1,8 +1,8 @@
 "use client";
+import { on } from "events";
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
-import { buffer } from "stream/consumers";
 
 type ElementInfo = {
     x1: number;
@@ -37,7 +37,7 @@ const usePressedKeys = () => {
     }, []);
 
     return keys;
-}
+};
 
 const generator = rough.generator();
 
@@ -60,7 +60,10 @@ export default function Canvas(): JSX.Element {
     const [height, setHeight] = useState(0);
     const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
     const [scale, setScale] = useState(1);
-    const [scaleOffset, setScaleOffset] = useState<{}>({ x: 0, y: 0 });
+    const [scaleOffset, setScaleOffset] = useState<{ x: number; y: number }>({
+        x: 0,
+        y: 0,
+    });
     const [elements, setElements] = useState<ElementInfo[] | []>([]);
     const pressedKeys = usePressedKeys();
 
@@ -86,33 +89,49 @@ export default function Canvas(): JSX.Element {
         const ctx = contextRef.current;
         const roughCanvas = rough.canvas(canvas);
 
+        const scaledWidth = width * scale;
+        const scaledHeight = height * scale;
+        const scaledOffestX = (scaledWidth - canvas.width) / 2;
+        const scaledOffestY = (scaledHeight - canvas.height) / 2;
+        setScaleOffset({ x: scaledOffestX * scale, y: scaledOffestY * scale });
+
         if (!ctx) return;
-        contextRef?.current?.translate(panOffset.x, panOffset.y);
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         ctx.fillRect(50, 50, 100, 100);
+
+        ctx.translate(
+            panOffset.x * scale - scaledOffestX,
+            panOffset.y * scale - scaledOffestY
+        );
+        ctx.scale(scale, scale);
+        ctx.fillRect(50, 200, 100, 100);
 
         elements.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
-    }, [elements, panOffset, width, height]);
+    }, [elements, panOffset, scale, width, height]);
 
     useEffect(() => {
-        const panHandler = (event: WheelEvent) => {
-            setPanOffset((prevState) => ({
-                x: prevState.x + event.deltaX,
-                y: prevState.y + event.deltaY,
-            }));
+        const panOrZoomHandler = (event: WheelEvent) => {
+            if (pressedKeys.has(" ")) onZoom(event.deltaY * (0.001));
+            else {
+                setPanOffset((prevState) => ({
+                    x: prevState.x - event.deltaX,
+                    y: prevState.y - event.deltaY,
+                }));
+            }
         };
 
-        document.addEventListener("wheel", panHandler);
-        return () => document.removeEventListener("wheel", panHandler);
-    }, []);
+        document.addEventListener("wheel", panOrZoomHandler);
+        return () => document.removeEventListener("wheel", panOrZoomHandler);
+    }, [pressedKeys]);
 
     function getMouseCoordinates(
         event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
     ) {
-        const clientX = event.clientX - panOffset.x;
-        const clientY = event.clientY - panOffset.y;
+        const clientX =
+            (event.clientX - panOffset.x * scale + scaleOffset.x)/scale;
+        const clientY =
+            (event.clientY - panOffset.y * scale + scaleOffset.y)/scale;
         return { clientX, clientY };
     }
 
@@ -154,11 +173,14 @@ export default function Canvas(): JSX.Element {
             setElements(elementsCopy);
         }
 
-        console.log({ clientX, clientY });
     }
 
     function handleMouseUp() {
         setAction("none");
+    }
+
+    function onZoom(delta: number) {
+        setScale(prevState => Math.min(Math.max(prevState + delta, 0.1), 20));
     }
 
     return (
