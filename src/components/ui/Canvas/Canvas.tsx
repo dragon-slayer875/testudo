@@ -172,15 +172,6 @@ export default function Canvas(): JSX.Element {
             elementsCopy[index] = updatedElement;
             setElements(elementsCopy);
         }
-        console.log(
-            clientX,
-            clientY,
-            action,
-            scaleOffset.x,
-            scaleOffset.y,
-            scale,
-            scaleOffset
-        );
     }
 
     function handleMouseUp() {
