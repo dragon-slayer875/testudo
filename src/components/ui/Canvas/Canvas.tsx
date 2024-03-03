@@ -185,7 +185,7 @@ export default function Canvas(): JSX.Element {
     return (
         <canvas
             ref={canvasRef}
-            className={cn(" bg-slate-100",{ "cursor-grab": action === "pan" })}
+            className={cn(" bg-slate-100 max-h-screen w-full",{ "cursor-grab": action === "pan" })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
