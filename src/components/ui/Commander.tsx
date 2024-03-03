@@ -1,24 +1,24 @@
 "use client";
+import { Button } from "./button";
 import React, { useRef } from "react";
 
 export default function Commander() {
     const inputRef = useRef(null);
     return (
-        <div className="absolute top-10 left-10">
+        <div className="absolute top-10 left-10 flex gap-3">
             <input
                 ref={inputRef}
-                type="text"
-                className="border-2 border-gray-500"
-            />
-            <button
-                className="border-2 border-gray-500"
-                onClick={() => {
-                    // @ts-ignore
-                    console.log(inputRef.current.value);
+                type="number"
+                name="commander"
+                className="border-2 border-red-500 focus:border-blue-500 text"
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        // @ts-ignore
+                        console.log(inputRef.current.value);
+                    }
                 }}
-            >
-                Send
-            </button>
+            />
+            <Button variant={"secondary"} onClick={() => console.log("clicked")}>Send</Button>
         </div>
     );
 }
