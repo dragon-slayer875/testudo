@@ -13,6 +13,7 @@ export function ThemeToggle() {
         <Button
             variant="ghost"
             size="sm"
+            className="absolute top-20 left-5"
             onClick={() => {
                 theme === "dark" ? setTheme("light") : setTheme("dark");
             }}
