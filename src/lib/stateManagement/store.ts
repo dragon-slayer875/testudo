@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import commandsReducer from "@/stateManagement/commandsSlice";
-import drawingsReducer from "@/stateManagement/drawingsSlice";
+import commandsReducer from "@/lib/stateManagement/commandsSlice";
+import drawingsReducer from "@/lib/stateManagement/drawingsSlice";
 
 export default configureStore({
     reducer: {

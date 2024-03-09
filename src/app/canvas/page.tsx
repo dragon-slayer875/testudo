@@ -1,7 +1,7 @@
 "use client";
 import Commander from "@/components/ui/Commander";
 import Canvas from "@/components/ui/Canvas/Canvas";
-import CanvasStore from "@/stateManagement/store";
+import CanvasStore from "@/lib/stateManagement/store";
 import { Provider } from "react-redux";
 
 export default function Page(): JSX.Element {

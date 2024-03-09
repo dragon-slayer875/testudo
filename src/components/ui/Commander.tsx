@@ -7,7 +7,7 @@ import {
     undo,
     redo,
     selectCommands,
-} from "@/stateManagement/commandsSlice";
+} from "@/lib/stateManagement/commandsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Commander() {

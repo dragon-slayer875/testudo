@@ -4,13 +4,13 @@ import React, { useEffect, useRef, useState, useLayoutEffect, use } from "react"
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 import { useDispatch, useSelector } from "react-redux";
-import { selectDrawings } from "@/stateManagement/drawingsSlice";
-import { selectCommands } from "@/stateManagement/commandsSlice";
+import { selectDrawings } from "@/lib/stateManagement/drawingsSlice";
+import { selectCommands } from "@/lib/stateManagement/commandsSlice";
 import {
     addDrawable,
     updateLastDrawable,
-} from "@/stateManagement/drawingsSlice";
-import { setCoordinates, setInitialStateInstance } from "@/stateManagement/commandsSlice";
+} from "@/lib/stateManagement/drawingsSlice";
+import { setCoordinates, setInitialStateInstance } from "@/lib/stateManagement/commandsSlice";
 
 export type ElementInfo = {
     x1: number;
