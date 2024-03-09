@@ -1,10 +1,18 @@
 "use client";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect, use } from "react";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
+import { useDispatch, useSelector } from "react-redux";
+import { selectDrawings } from "@/stateManagement/drawingsSlice";
+import { selectCommands } from "@/stateManagement/commandsSlice";
+import {
+    addDrawable,
+    updateLastDrawable,
+} from "@/stateManagement/drawingsSlice";
+import { setCoordinates } from "@/stateManagement/commandsSlice";
 
-type ElementInfo = {
+export type ElementInfo = {
     x1: number;
     y1: number;
     x2: number;
@@ -52,6 +60,7 @@ function createElement(
 }
 
 export default function Canvas(): JSX.Element {
+    const dispatch = useDispatch();
     const [action, setAction] = useState<
         "draw" | "select" | "move" | "delete" | "pan" | "none"
     >("none");
@@ -64,11 +73,17 @@ export default function Canvas(): JSX.Element {
         x: 0,
         y: 0,
     });
-    const [elements, setElements] = useState<ElementInfo[] | []>([]);
+    const drawables = useSelector(selectDrawings);
+    const commanderState = useSelector(selectCommands);
     const pressedKeys = usePressedKeys();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+    useLayoutEffect(() => {
+        dispatch(setCoordinates({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+    }
+    ,[]);
 
     useLayoutEffect(() => {
         setWidth(window.innerWidth);
@@ -104,11 +119,14 @@ export default function Canvas(): JSX.Element {
         );
         ctx.scale(scale, scale);
 
-        elements.forEach(({ roughElement }) => {
+        drawables.forEach(({ roughElement }) => {
+            roughCanvas.draw(roughElement);
+        });
+        commanderState.commanderDrawings.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
         ctx.restore();
-    }, [elements, panOffset, scale, width, height]);
+    }, [drawables, commanderState, panOffset, scale, width, height]);
 
     useEffect(() => {
         const panOrZoomHandler = (event: WheelEvent) => {
@@ -147,7 +165,7 @@ export default function Canvas(): JSX.Element {
         if (event.button === 0) {
             setAction("draw");
             const element = createElement(clientX, clientY, clientX, clientY);
-            setElements((prevState) => [...prevState, element]);
+            dispatch(addDrawable(element));
         }
     }
 
@@ -165,12 +183,10 @@ export default function Canvas(): JSX.Element {
             return;
         }
         if (action === "draw") {
-            const index = elements.length - 1;
-            const { x1, y1 } = elements[index];
+            const index = drawables.length - 1;
+            const { x1, y1 } = drawables[index];
             const updatedElement = createElement(x1, y1, clientX, clientY);
-            const elementsCopy = elements.slice();
-            elementsCopy[index] = updatedElement;
-            setElements(elementsCopy);
+            dispatch(updateLastDrawable(updatedElement));
         }
     }
 
@@ -185,7 +201,9 @@ export default function Canvas(): JSX.Element {
     return (
         <canvas
             ref={canvasRef}
-            className={cn(" bg-slate-100 max-h-screen w-full",{ "cursor-grab": action === "pan" })}
+            className={cn(" bg-slate-100 max-h-screen w-full", {
+                "cursor-grab": action === "pan",
+            })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
