@@ -10,7 +10,7 @@ import {
     addDrawable,
     updateLastDrawable,
 } from "@/stateManagement/drawingsSlice";
-import { setCoordinates } from "@/stateManagement/commandsSlice";
+import { setCoordinates, setInitialStateInstance } from "@/stateManagement/commandsSlice";
 
 export type ElementInfo = {
     x1: number;
@@ -82,6 +82,7 @@ export default function Canvas(): JSX.Element {
 
     useLayoutEffect(() => {
         dispatch(setCoordinates({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+        dispatch(setInitialStateInstance());
     }
     ,[]);
 

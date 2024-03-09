@@ -55,14 +55,7 @@ export const commandsSlice = createSlice({
         angle: 0,
         color: "black",
         drawings: [] as ElementInfo[],
-        commanderStateInstances: [
-            {
-                coordinates: { x: 0, y: 0 },
-                angle: 0,
-                color: "black",
-                drawingsIndex: 0,
-            },
-        ] as commanderStateInstancesType[],
+        commanderStateInstances: [] as commanderStateInstancesType[],
         drawingsIndex: 0,
         instanceIndex: 0,
     },
@@ -139,6 +132,16 @@ export const commandsSlice = createSlice({
         ) => {
             state.coordinates = action.payload;
         },
+        setInitialStateInstance: (state) => {
+            state.commanderStateInstances = [
+                {
+                    coordinates: state.coordinates,
+                    angle: state.angle,
+                    color: state.color,
+                    drawingsIndex: state.drawingsIndex,
+                },
+            ];
+        },
         undo: (state) => {
             state.instanceIndex -= 1;
             state.coordinates =
@@ -169,6 +172,6 @@ export const commandsSlice = createSlice({
 });
 
 export const selectCommands = (state: commanderStateType) => state.commands;
-export const { forward, backward, rotate, undo, redo, setCoordinates } =
+export const { forward, backward, rotate, undo, redo, setCoordinates, setInitialStateInstance } =
     commandsSlice.actions;
 export default commandsSlice.reducer;
