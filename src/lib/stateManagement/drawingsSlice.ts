@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ElementInfo } from "@/components/ui/Canvas/Canvas";
+import { ElementInfo } from "@/lib/types";
 
-
-interface DrawingsState {
-    drawables: ElementInfo[];
-}
+type drawingsStateType = {
+    drawables: {
+        drawables: ElementInfo[];
+    };
+};
 
 export const drawingsSlice = createSlice({
     name: "drawables",
     initialState: {
-        drawables: [],
-    } as DrawingsState,
+        drawables: [] as ElementInfo[],
+    },
     reducers: {
         addDrawable: (state, action: PayloadAction<ElementInfo> ) => {
             state.drawables.push(action.payload);
@@ -26,6 +27,6 @@ export const drawingsSlice = createSlice({
     },
 });
 
-export const selectDrawings = (state: { drawables: { drawables: ElementInfo[] } }) => state.drawables.drawables;
+export const selectDrawings = (state: drawingsStateType) => state.drawables.drawables;
 export const { addDrawable, updateLastDrawable, removeDrawable } = drawingsSlice.actions;
 export default drawingsSlice.reducer;

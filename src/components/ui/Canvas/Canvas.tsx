@@ -1,8 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useRef, useState, useLayoutEffect, use } from "react";
-import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
+import { ElementInfo } from "@/lib/types";
 import { useDispatch, useSelector } from "react-redux";
 import { selectDrawings } from "@/lib/stateManagement/drawingsSlice";
 import { selectCommands } from "@/lib/stateManagement/commandsSlice";
@@ -12,13 +12,7 @@ import {
 } from "@/lib/stateManagement/drawingsSlice";
 import { setCoordinates, setInitialStateInstance } from "@/lib/stateManagement/commandsSlice";
 
-export type ElementInfo = {
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-    roughElement: Drawable;
-};
+
 
 const usePressedKeys = () => {
     const [keys, setKeys] = useState<Set<string>>(new Set());

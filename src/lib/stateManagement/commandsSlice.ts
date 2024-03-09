@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ElementInfo } from "@/components/ui/Canvas/Canvas";
+import { ElementInfo } from "@/lib/types";
 import rough from "roughjs/bin/rough";
 
 type commanderStateInstancesType = {
