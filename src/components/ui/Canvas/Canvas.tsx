@@ -122,7 +122,7 @@ export default function Canvas(): JSX.Element {
         drawables.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
-        commanderState.commanderDrawings.forEach(({ roughElement }) => {
+        commanderState.drawings.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
         ctx.restore();

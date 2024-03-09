@@ -13,8 +13,8 @@ type commanderStateType = {
             last: string;
             current: string;
         };
-        commanderDrawings: ElementInfo[];
-        commanderStateIndex: number;
+        drawings: ElementInfo[];
+        stateIndex: number;
     };
 };
 
@@ -57,8 +57,8 @@ export const commandsSlice = createSlice({
             last: "black",
             current: "black",
         },
-        commanderDrawings: [] as ElementInfo[],
-        commanderStateIndex: -1,
+        drawings: [] as ElementInfo[],
+        stateIndex: -1,
     },
     reducers: {
         forward: (state, action: PayloadAction<number>) => {
@@ -76,7 +76,7 @@ export const commandsSlice = createSlice({
             //     );
             //     state.commanderStateIndex += 1
             // }
-            state.commanderDrawings.push(
+            state.drawings.push(
                 createElement(
                     state.lastCoordinates.x,
                     state.lastCoordinates.y,
@@ -100,7 +100,7 @@ export const commandsSlice = createSlice({
             //         state.commanderStateIndex + 1
             //     );
             // }
-            state.commanderDrawings.push(
+            state.drawings.push(
                 createElement(
                     state.lastCoordinates.x,
                     state.lastCoordinates.y,
@@ -120,10 +120,10 @@ export const commandsSlice = createSlice({
             state.lastCoordinates = action.payload;
         },
         undo: (state) => {
-            state.commanderStateIndex -= 1;
+            state.stateIndex -= 1;
         },
         redo: (state) => {
-            state.commanderStateIndex += 1;
+            state.stateIndex += 1;
         },
     },
 });
