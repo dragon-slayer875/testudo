@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "./button";
 import React, { useRef } from "react";
-import { forward, backward } from "@/stateManagement/commandsSlice";
+import { forward, backward, undo, redo } from "@/stateManagement/commandsSlice";
 import { useDispatch } from "react-redux";
 
 export default function Commander() {
@@ -31,6 +31,12 @@ export default function Commander() {
                 }}
             >
                 Send
+            </Button>
+            <Button variant={"secondary"} onClick={() => dispatch(undo())}>
+                Undo
+            </Button>
+            <Button variant={"secondary"} onClick={() => dispatch(redo())}>
+                Redo
             </Button>
         </div>
     );

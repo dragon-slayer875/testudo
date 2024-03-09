@@ -2,19 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ElementInfo } from "@/components/ui/Canvas/Canvas";
 import rough from "roughjs/bin/rough";
 
+type commanderStateInstancesType = {
+    coordinates: { x: number; y: number };
+    angle: number;
+    color: string;
+    drawingsIndex: number;
+};
+
 type commanderStateType = {
     commands: {
-        lastCoordinates: { x: number; y: number };
-        angle: {
-            last: number;
-            current: number;
-        };
-        color: {
-            last: string;
-            current: string;
-        };
+        coordinates: { x: number; y: number };
+        angle: number;
+        color: string;
         drawings: ElementInfo[];
-        stateIndex: number;
+        commanderStateInstances: commanderStateInstancesType[];
+        drawingsIndex: number;
+        instanceIndex: number;
     };
 };
 
@@ -45,85 +48,122 @@ function giveNewCoordinates(
 export const commandsSlice = createSlice({
     name: "commands",
     initialState: {
-        lastCoordinates: {
+        coordinates: {
             x: 0,
             y: 0,
         },
-        angle: {
-            last: 0,
-            current: 0,
-        },
-        color: {
-            last: "black",
-            current: "black",
-        },
+        angle: 0,
+        color: "black",
         drawings: [] as ElementInfo[],
-        stateIndex: -1,
+        commanderStateInstances: [
+            {
+                coordinates: { x: 0, y: 0 },
+                angle: 0,
+                color: "black",
+                drawingsIndex: 0,
+            },
+        ] as commanderStateInstancesType[],
+        drawingsIndex: 0,
+        instanceIndex: 0,
     },
     reducers: {
         forward: (state, action: PayloadAction<number>) => {
             const newCoordinates = giveNewCoordinates(
-                state.lastCoordinates.x,
-                state.lastCoordinates.y,
-                state.angle.current,
+                state.coordinates.x,
+                state.coordinates.y,
+                state.angle,
                 action.payload
             );
-            // if (state.commanderStateIndex === -1)
-            //     state.commanderStateIndex += 1;
-            // else {
-            //     state.commanderDrawings = state.commanderDrawings.slice(
-            //         state.commanderStateIndex + 1
-            //     );
-            //     state.commanderStateIndex += 1
-            // }
+            state.drawings = state.drawings.slice(0, state.drawingsIndex);
+            state.drawingsIndex += 1;
             state.drawings.push(
                 createElement(
-                    state.lastCoordinates.x,
-                    state.lastCoordinates.y,
+                    state.coordinates.x,
+                    state.coordinates.y,
                     newCoordinates.x,
                     newCoordinates.y
                 )
             );
-            state.lastCoordinates = newCoordinates;
+            state.coordinates = newCoordinates;
+            state.instanceIndex += 1;
+            state.commanderStateInstances = state.commanderStateInstances.slice(
+                0,
+                state.instanceIndex
+            );
+            state.commanderStateInstances.push({
+                coordinates: state.coordinates,
+                angle: state.angle,
+                color: state.color,
+                drawingsIndex: state.drawingsIndex,
+            });
         },
         backward: (state, action: PayloadAction<number>) => {
             const newCoordinates = giveNewCoordinates(
-                state.lastCoordinates.x,
-                state.lastCoordinates.y,
-                state.angle.current + 180,
+                state.coordinates.x,
+                state.coordinates.y,
+                state.angle + 180,
                 action.payload
             );
-            // if (state.commanderStateIndex === -1)
-            //     state.commanderStateIndex += 1;
-            // else {
-            //     state.commanderDrawings = state.commanderDrawings.slice(
-            //         state.commanderStateIndex + 1
-            //     );
-            // }
+            state.drawings = state.drawings.slice(0, state.drawingsIndex);
+            state.drawingsIndex += 1;
             state.drawings.push(
                 createElement(
-                    state.lastCoordinates.x,
-                    state.lastCoordinates.y,
+                    state.coordinates.x,
+                    state.coordinates.y,
                     newCoordinates.x,
                     newCoordinates.y
                 )
             );
-            state.lastCoordinates = newCoordinates;
+            state.coordinates = newCoordinates;
+            state.commanderStateInstances.push({
+                coordinates: state.coordinates,
+                angle: state.angle,
+                color: state.color,
+                drawingsIndex: state.drawingsIndex,
+            });
+            state.instanceIndex += 1;
         },
         rotate: (state, action: PayloadAction<number>) => {
-            state.angle.current += action.payload;
+            state.angle += action.payload;
+            state.commanderStateInstances.push({
+                coordinates: state.coordinates,
+                angle: state.angle,
+                color: state.color,
+                drawingsIndex: state.drawingsIndex,
+            });
+            state.instanceIndex += 1;
         },
         setCoordinates: (
             state,
             action: PayloadAction<{ x: number; y: number }>
         ) => {
-            state.lastCoordinates = action.payload;
+            state.coordinates = action.payload;
         },
         undo: (state) => {
-            state.stateIndex -= 1;
+            state.instanceIndex -= 1;
+            state.coordinates =
+                state.commanderStateInstances[state.instanceIndex].coordinates;
+            state.angle =
+                state.commanderStateInstances[state.instanceIndex].angle;
+            state.color =
+                state.commanderStateInstances[state.instanceIndex].color;
+            state.drawingsIndex =
+                state.commanderStateInstances[
+                    state.instanceIndex
+                ].drawingsIndex;
         },
         redo: (state) => {
-            state.stateIndex += 1;
+            state.instanceIndex += 1;
+            state.coordinates =
+                state.commanderStateInstances[state.instanceIndex].coordinates;
+            state.angle =
+                state.commanderStateInstances[state.instanceIndex].angle;
+            state.color =
+                state.commanderStateInstances[state.instanceIndex].color;
+            state.drawingsIndex =
+                state.commanderStateInstances[
+                    state.instanceIndex
+                ].drawingsIndex;
         },
     },
 });

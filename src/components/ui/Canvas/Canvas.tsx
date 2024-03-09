@@ -122,9 +122,9 @@ export default function Canvas(): JSX.Element {
         drawables.forEach(({ roughElement }) => {
             roughCanvas.draw(roughElement);
         });
-        commanderState.drawings.forEach(({ roughElement }) => {
-            roughCanvas.draw(roughElement);
-        });
+        for (let i = 0; i < commanderState.drawingsIndex; i++) {
+            roughCanvas.draw(commanderState.drawings[i].roughElement);
+        }
         ctx.restore();
     }, [drawables, commanderState, panOffset, scale, width, height]);
 
