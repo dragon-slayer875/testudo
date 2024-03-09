@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 
 export default function Commander() {
     const dispatch = useDispatch();
-    const inputRef = useRef< null | HTMLInputElement >(null);
+    const inputRef = useRef<null | HTMLInputElement>(null);
     return (
         <div className="absolute top-10 left-10 flex gap-3">
             <input
@@ -24,7 +24,11 @@ export default function Commander() {
             />
             <Button
                 variant={"secondary"}
-                onClick={() => console.log("clicked")}
+                onClick={() => {
+                    if (inputRef.current !== null) {
+                        dispatch(forward(Number(inputRef.current.value)));
+                    }
+                }}
             >
                 Send
             </Button>
