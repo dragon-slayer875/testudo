@@ -84,6 +84,7 @@ export default function Canvas(): JSX.Element {
         dispatch(setCoordinates({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
         dispatch(setInitialStateInstance());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ,[]);
 
     useLayoutEffect(() => {
